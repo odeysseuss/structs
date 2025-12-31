@@ -26,11 +26,13 @@ private:
     /// split root
     void split_root();
     /// splits nth child node
-    void split(BtreeNode<T, order> *parent, int8_t n);
+    void split_child(BtreeNode<T, order> *parent, int8_t n);
+    /// insert in key in node
+    void insert(BtreeNode<T, order> *node, const T &key);
 
 public:
     Btree() = default;
     T get(const T key) const;
-    void set(const T key);
+    void set(const T &key);
     void print();
 };
