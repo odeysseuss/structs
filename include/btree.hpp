@@ -29,10 +29,13 @@ private:
     void split_child(BtreeNode<T, order> *parent, int8_t n);
     /// insert in key in node
     void insert(BtreeNode<T, order> *node, const T &key);
+    /// search for key
+    BtreeNode<T, order> *search(BtreeNode<T, order> *node, const T &key) const;
+    void print_node(BtreeNode<T, order> *node, int depth) const;
 
 public:
     Btree() = default;
-    T get(const T key) const;
+    const T *get(const T &key) const;
     void set(const T &key);
-    void print();
+    void print() const;
 };

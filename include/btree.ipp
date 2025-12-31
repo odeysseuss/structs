@@ -1,4 +1,5 @@
 #include "btree.hpp"
+#include <iostream>
 
 template <typename T, int8_t order>
 bool BtreeNode<T, order>::is_full() const {
@@ -146,4 +147,82 @@ void Btree<T, order>::set(const T &key) {
     }
 
     insert(root, key);
+}
+
+template <typename T, int8_t order>
+BtreeNode<T, order> *Btree<T, order>::search(BtreeNode<T, order> *node,
+                                             const T &key) const {
+    if (!node)
+        return nullptr;
+
+    // find the first key >= search key
+    int8_t i = 0;
+    while (i < node->num_keys && key > node->keys[i]) {
+        i++;
+    }
+
+    // check if key is found
+    if (i < node->num_keys && key == node->keys[i]) {
+        return node;
+    }
+
+    // if leaf and not found, return nullptr
+    if (node->is_leaf) {
+        return nullptr;
+    }
+
+    // otherwise search in the appropriate child
+    return search(node->childrens[i], key);
+}
+
+template <typename T, int8_t order>
+const T *Btree<T, order>::get(const T &key) const {
+    BtreeNode<T, order> *node = search(root, key);
+    if (!node) {
+        return nullptr;
+    }
+
+    // find the exact key in the node
+    for (int8_t i = 0; i < node->num_keys; i++) {
+        if (node->keys[i] == key) {
+            return &node->keys[i];
+        }
+    }
+
+    return nullptr;
+}
+
+template <typename T, int8_t order>
+void Btree<T, order>::print_node(BtreeNode<T, order> *node, int depth) const {
+    // print node header
+    for (int j = 0; j < depth; j++)
+        std::cout << "  ";
+    std::cout << (node->is_leaf ? "Leaf" : "Internal") << "["
+              << static_cast<int>(node->num_keys) << "]: ";
+
+    // print keys
+    for (int8_t i = 0; i < node->num_keys; i++) {
+        std::cout << node->keys[i];
+        if (i < node->num_keys - 1)
+            std::cout << ", ";
+    }
+    std::cout << std::endl;
+
+    // print children if not leaf
+    if (!node->is_leaf) {
+        for (int8_t i = 0; i <= node->num_keys; i++) {
+            print_node(node->childrens[i], depth + 1);
+        }
+    }
+}
+
+template <typename T, int8_t order>
+void Btree<T, order>::print() const {
+    if (!root) {
+        std::cout << "Empty B-tree (order " << static_cast<int>(order) << ")"
+                  << std::endl;
+        return;
+    }
+
+    print_node(root, 0);
 }
