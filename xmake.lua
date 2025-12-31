@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 add_rules("mode.debug", "mode.release")
 add_rules("plugin.compile_commands.autoupdate", { outputdir = "build" })
 
@@ -17,6 +18,7 @@ add_requires("gtest", {})
 
 target("structs")
 set_kind("static")
+add_includedirs("include")
 add_files("src/*.cpp")
 target_end()
 
@@ -25,6 +27,7 @@ for _, file in ipairs(os.files("tests/test_*.cpp")) do
 	target(name)
 	set_kind("binary")
 	set_default(false)
+	add_includedirs("include")
 	add_files(file)
 	add_tests("default")
 	add_deps("structs")
